@@ -18,3 +18,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::group(['middleware' => 'guest'], function() {
+    Route::get('/sign-in', [LoginController::class, 'create'])->name('login');
+    
+    Route::get('/sign-in/{sso_type}', [LoginController::class, 'sso']);
+    Route::get('/sign-in/{sso_type}/redirect', [LoginController::class, 'ssoRedirect']);
+});
+
+Route::group(['middleware' => 'auth'], function() {
+    Route::get('/dashboard', [MemberController::class, 'index'])->name('dashboard'); 
+    Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+});
