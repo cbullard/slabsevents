@@ -1,0 +1,23 @@
+{
+  "name": "streamevents",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite --host=127.0.0.1",
+    "build": "vite build",
+    "watch": "vite build --watch",
+    "preview": "vite preview --port 4173"
+  },
+  "dependencies": {
+    "pinia": "^2.0.16",
+    "url": "^0.11.1",
+    "vue": "^2.7.7",
+    "vue-router": "^3.5.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-legacy": "^2.0.0",
+    "@vitejs/plugin-vue2": "^1.1.2",
+    "terser": "^5.14.2",
+    "vite": "^3.0.2",
+    "vue-cli-plugin-vuetify": "~2.5.8"
+  }
+}
