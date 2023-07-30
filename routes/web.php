@@ -12,6 +12,7 @@ use Database\Seeders\UserDataSeeder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,7 +28,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/total_sales/{id}', function($id) {
-   $donation_total = Donation::where('user_id', $id)
+    $donation_total = Donation::where('user_id', $id)
         ->selectRaw('sum(amount) as total_donations')
         ->whereDate('created_at', '>', Carbon::today()->subDays(30))
         ->value('total_donations');
@@ -36,39 +37,32 @@ Route::get('/total_sales/{id}', function($id) {
         ->selectRaw('sum(amount) as total_merch')
         ->whereDate('created_at', '>', Carbon::today()->subDays(30))
         ->value('total_merch');
-   
-    $subscription_total = Subscriber::where('user_id', $id)
-        ->select('subscription_tier')
-        ->whereDate('created_at', '>', Carbon::today()->subDays(30))
-        ->distinct('subscription_tier')
-        ->groupBy('subscription_tier')
-        ->count();
-        // ->selectRaw('sum(amount) as total_merch')
-        // ->get();
-        // ->value('total_merch');
+    
+    $past30days = Carbon::today()->subDays(30);
+    $tierValues = Config::get('streamlabsConstants.tiers');
 
-    $subscription_total = Subscriber::where('user_id', $id)
-                                // ->distinct()
-                                // ->select('subscription_tier')
-                                ->selectRaw('sum(subscription_tier) as sub_total, subscription_tier')
-                                // ->distinct('subscription_tier')
-                                ->whereDate('created_at', '>', Carbon::today()->subDays(30))
-                                // ->select('subscription_tier')
+    $subscriptions = Subscriber::where('user_id', $id)
+                                ->select('subscription_tier')
+                                ->selectRaw('sum(subscription_tier) as sub_total')
+                                ->whereDate('created_at', '>', $past30days)
                                 ->groupBy('subscription_tier')
-                                // ->count();
-                                // ->get('subscription_tier');
                                 ->get();
 
-        return $subscription_total;
-        dd($subscription_total);
-dd($donation_total, $merch_total);
-    // $waf1 = DB::table('donations')->join('subscriptions', 'subscriptions.sp_id', '=', 'pricings.sp_id')
-    //                   ->select(DB::raw('sum(pricings.Regular_Laundry*carts.q_Regular_Laundry) AS waf1'))
-    //                   ->where('pricings.sp_id', '=', $sp_id)->where('carts.id', '=' , $cart_id)->first();
 
-    //                   $waf1 = DB::table('pricings')->join('carts', 'carts.sp_id', '=', 'pricings.sp_id')
-    //                   ->select(DB::raw('sum(pricings.Regular_Laundry*carts.q_Regular_Laundry) AS waf1'))
-    //                   ->where('pricings.sp_id', '=', $sp_id)->where('carts.id', '=' , $cart_id)->first();
+    $subscription_totals = 0;
+    foreach ($subscriptions as $tier) {
+        $total =  intVal($tier['sub_total']);
+        $tierNumber = $tier['subscription_tier'];
+        $subscription_totals += $total * $tierValues[$tierNumber]['price'];
+    }
+    $totals = [
+        'donations' =>number_format($donation_total, 2),
+        'merch_sales' =>number_format($merch_total, 2),
+        'subscriptions' => number_format($subscription_totals,2),
+        'total' => number_format(round($subscription_totals + $donation_total + $merch_total, 2), 2)
+    ];
+
+    return $totals;
 });
 
 

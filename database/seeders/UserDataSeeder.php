@@ -19,7 +19,7 @@ class UserDataSeeder extends Seeder
     static public function run($user_id = 1, $table = null): void
     {
         if(!in_array($table, ['followers', 'subscribers', 'sales', 'donations'])) {
-            dd('Allowed table names: followers, subscribers, merch_sales, donations');
+            dd('Allowed table names: followers, subscribers, sales, donations');
             return;
         }
 
@@ -52,10 +52,6 @@ class UserDataSeeder extends Seeder
                 Donation::factory()
                             ->count($seedQuantity)
                             ->create(['user_id' => $user->id]);
-                break;
-
-            default:
-                dd('ruh roh!');
                 break;
         }
     }
