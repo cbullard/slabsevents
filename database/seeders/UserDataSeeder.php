@@ -7,6 +7,7 @@ use App\Models\Follower;
 use App\Models\MerchSale;
 use App\Models\Subscriber;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,42 +16,47 @@ class UserDataSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    static public function run($user_id = 1): void
+    static public function run($user_id = 1, $table = null): void
     {
-        // dd($user_id);
+        if(!in_array($table, ['followers', 'subscribers', 'sales', 'donations'])) {
+            dd('Allowed table names: followers, subscribers, merch_sales, donations');
+            return;
+        }
+
         $user = User::where('id',$user_id)->first();
-        // $user->factory()
-        // ->hasFollowers(4)
-        // ->hasSubscribers(4)
-        // ->hasSales(4)
-        // ->hasDonations(4)
-        // ->create();
         
-        // $user = User::factory()->create();
-        Follower::factory()
-                    ->count(10)
-                    ->create(['user_id' => $user->id]);
+        if($user == null) {
+            dd('User not found');
+            return;
+        }
 
-        Subscriber::factory()
-                    ->count(10)
-                    ->create(['user_id' => $user->id]);
+        $seedQuantity = 300;
 
-        MerchSale::factory()
-                    ->count(10)
-                    ->create(['user_id' => $user->id]);
+        switch ($table) {
+            case 'followers':
+                Follower::factory()
+                            ->count($seedQuantity)
+                            ->create(['user_id' => $user->id]);
+                break;
+            case 'subscribers':
+                Subscriber::factory()
+                            ->count($seedQuantity)
+                            ->create(['user_id' => $user->id]);
+                break;
+            case 'sales':
+                MerchSale::factory()
+                            ->count($seedQuantity)
+                            ->create(['user_id' => $user->id]);
+                break;
+            case 'donations':
+                Donation::factory()
+                            ->count($seedQuantity)
+                            ->create(['user_id' => $user->id]);
+                break;
 
-        Donation::factory()
-                    ->count(10)
-                    ->create(['user_id' => $user->id]);
-
-        
-        // dd($user);
-        // User::factory(1)
-        // User::factory()->create(['id' => 'Our Specific Comment']);
-        //     ->hasFollowers(4)
-        //     ->hasSubscribers(4)
-        //     ->hasSales(4)
-        //     ->hasDonations(4)
-        //     ->create();
+            default:
+                dd('ruh roh!');
+                break;
+        }
     }
 }

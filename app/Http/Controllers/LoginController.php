@@ -152,7 +152,7 @@ class LoginController extends Controller
         $this->guard()->setToken(
             $this->userToken = $this->guard()->login($user)
         );
-        dd('done');
+        // dd('done');
         return view('oauth/callback', [
             'token' => $this->userToken,
             'token_type' => 'bearer',

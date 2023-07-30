@@ -35,9 +35,10 @@ export default {
       // }
     },
     mounted() {
-        axios.get('/api/user').then(response => {
-          console.log('user',response);
-        });
+      console.log('about page');
+        // axios.get('/api/user').then(response => {
+        //   console.log('user',response);
+        // });
     },
     data() {
         return {

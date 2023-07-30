@@ -49,17 +49,22 @@ class User extends Authenticatable
         return $this->hasMany(Follower::class);
     }
 
-    public function subscribers()
+    public function subscribers(): HasMany
     {
         return $this->hasMany(Subscriber::class);
     }
 
-    public function sales()
+    public function sales(): HasMany
     {
         return $this->hasMany(MerchSale::class);
     }
 
-    public function donations()
+    public function donations(): HasMany
+    {
+        return $this->hasMany(Donation::class);
+    }
+
+    public function followersPast30Days(): HasMany
     {
         return $this->hasMany(Donation::class);
     }

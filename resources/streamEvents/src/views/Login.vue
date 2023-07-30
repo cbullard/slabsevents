@@ -50,6 +50,7 @@
             </div>
           </div>
         </form>
+        {{ user }}
       </div>
     </div>
   </div>
@@ -82,6 +83,7 @@ export default {
       email: '',
       password: ''
     }),
+    user: {},    
     remember: false
   }),
 
@@ -90,16 +92,30 @@ export default {
   },
   methods: {
     async login () {
-      axios.get('/sanctum/csrf-cookie').then(response => {
-        console.log('login',response);
+      await axios.get('/sanctum/csrf-cookie').then(response => {
+        console.log('1 login',response);
       // Submit the form.
-        axios.post('/login', {
+
+      });
+       await axios.post('/login', {
           email: this.form.email,
           password: this.form.password,
         }).then(response => {
-          console.log(response);  
+          console.log('2 login response',response);  
+          this.user = response.data;
+          // axios.get('/api/user').then(response => {
+          //   console.log('4',response);
+          //   this.user = response.user;
+          //   this.$router.push({ name: 'dashboard' })
+          // }).catch(error => {
+          //   console.log('5',error);
+          //   this.$router.push({ name: 'error' })
+          // });
         });
-      });
+
+        // console.log('3 --',response);
+
+          
       // const { data } = await this.form.post('/api/login')
 
       // // Save the token.
@@ -109,10 +125,11 @@ export default {
       // })
 
       // Fetch the user.
-      await this.$store.dispatch('auth/fetchUser')
+      // await this.$store.dispatch('auth/fetchUser')
 
       // Redirect home.
-      this.$router.push({ name: 'home' })
+      // this.$router.push({ name: 'about' })
+      // this.$router.push({ name: 'home' })
     }
   }
 }
