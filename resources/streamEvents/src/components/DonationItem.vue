@@ -22,11 +22,6 @@
       font-style: italic;
     }
 
-    &__amount{
-    // font-weight: 600;
-    // color: #3e3e3e;
-    }
-
     &__message{
       font-size: 0.9rem;
       color: #3e3e3e;

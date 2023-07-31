@@ -1,8 +1,3 @@
-<script setup>
-// import HelloWorld from './components/HelloWorld.vue'
-// import Dashboard from './views/DashboardView.vue'
-</script>
-
 <template>
   <div id="app">
     <header>

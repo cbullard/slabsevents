@@ -55,14 +55,12 @@ axios.defaults.withCredentials = true;
         const newWindow = openWindow('', 'login')
 
         const url = await this.fetchOauthUrl('github')
-        // console.log('url', url);
         newWindow.location.href = url
       },
 
       async fetchOauthUrl (provider) {
-        console.log('fetchOauthUrl');
+
         const { data } = await axios.post(`http://streamlabs.code/api/oauth/${provider}`)
-        // return 'a'
         return data.url
       },
       /**

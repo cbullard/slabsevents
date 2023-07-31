@@ -40,19 +40,20 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    // public function login(Request $request)
-    // {
-    //     $request->validate([
-    //         'email' => 'required',
-    //         'password' => 'required',
-    //     ]);
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required',
+            'password' => 'required',
+        ]);
      
-    //     $credentials = $request->only('email', 'password');
-    //     if (Auth::attempt($credentials)) {
+        $credentials = $request->only('email', 'password');
+        if (Auth::attempt($credentials)) {
+            dd('success');
   
-    //         return redirect()->route('home');
-    //     }
+            return redirect()->route('home');
+        }
     
     //     return redirect("login")->withSuccess('Oppes! You have entered invalid credentials');
-    // }
+    }
 }

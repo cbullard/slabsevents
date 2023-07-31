@@ -32,9 +32,8 @@ Route::post('/recent_activity', [DashboardController::class, 'getRecentActivity'
 Route::get('/sign-in/{sso_type}', [LoginController::class, 'sso']);
 Route::post('oauth/{sso_type}', [LoginController::class, 'redirectToProvider']);
 
-Route::post('oauth/{sso_type}', [LoginController::class, 'redirectToProvider']);
 
-
+Route::get('/login', [LoginController::class, 'login']);
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });

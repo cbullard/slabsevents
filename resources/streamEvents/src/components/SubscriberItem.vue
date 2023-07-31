@@ -17,7 +17,6 @@
     font-size: 1.0rem;
     
     &__name{
-      // margin-right: 0.5rem;
       font-style: italic;
     }
   }

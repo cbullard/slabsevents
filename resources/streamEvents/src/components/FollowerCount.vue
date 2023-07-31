@@ -26,8 +26,6 @@
       justify-content: center;
       align-items: center;
       font-size: 2.5rem;
-      // height: 100%;
-      // width: 100%;
     }
 
     &__amount{
