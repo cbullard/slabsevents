@@ -134,6 +134,7 @@ axios.defaults.baseURL = 'http://streamlabs.code';
     data() {
       return {
         githubAuth: false,
+        postData: {},
         userDetails: {},
         cardLimit: 100,
         cardIncrease: 10,
@@ -153,59 +154,12 @@ axios.defaults.baseURL = 'http://streamlabs.code';
     },
 
     mounted () {
+      this.postData.id = 1;
+      // this.postData.id = "a";
       this.getDashboardDetails(this.activityFeedOffset, this.activityFeedLimit);
       this.getFollowerCount();
       this.getTopSales();
       this.getTotalSales();
-      
-
-      // window.addEventListener("scroll", handleInfiniteScroll);
-
-      
-
-    //   const cardContainer = document.getElementById("card-container");
-    //   const cardCountElem = document.getElementById("card-count");
-    //   const cardTotalElem = document.getElementById("card-total");
-    //   const loader = document.getElementById("loader");
-      
-    //   cardTotalElem.innerHTML = this.cardLimit;
-      
-    //   const pageCount = Math.ceil(this.cardLimit / this.cardIncrease);
-    //   const getRandomColor = () => {
-    //     const h = Math.floor(Math.random() * 360);
-    //     return `hsl(${h}deg, 90%, 85%)`;
-    //   };
-    //   const createCard = (index) => {
-    //     const card = document.createElement("div");
-    //     card.className = "card";
-    //     card.innerHTML = index;
-    //     card.style.backgroundColor = getRandomColor();
-    //     cardContainer.appendChild(card);
-    //   };
-
-    //   const addCards = (pageIndex) => {
-    //     this.currentPage = pageIndex;
-        
-    //     const startRange = (pageIndex - 1) * this.cardIncrease;
-    //     const endRange = this.currentPage == pageCount ? this.cardLimit : pageIndex * this.cardIncrease;
-        
-    //     cardCountElem.innerHTML = endRange;
-
-    //     for (let i = startRange + 1; i <= endRange; i++) {
-    //       createCard(i);
-    //     }
-    //   };
-
-    // addCards(this.currentPage);
-
-    // const handleInfiniteScroll = () => {
-    //   const endOfPage = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
-    //   console.log('endOfPage', endOfPage);
-    //   if (endOfPage) {
-    //     addCards(this.currentPage + 1);
-    //   }
-    // };
-    // window.addEventListener("scroll", handleInfiniteScroll);
 
   },
 
@@ -217,11 +171,8 @@ axios.defaults.baseURL = 'http://streamlabs.code';
       handleScroll(event) {
         const activityContainer = document.getElementById("activity");
         this.scrollTop = event.currentTarget.scrollTop;
-        // console.log('you be scollin', this.scrollTop);
-        console.log(activityContainer.scrollTop, activityContainer.scrollHeight - activityContainer.offsetHeight-1);
         if( activityContainer.scrollTop >= (activityContainer.scrollHeight - activityContainer.offsetHeight - 1))
         {
-          console.log('bottom');
           this.activityFeedOffset += this.activityFeedLimit;
           this.getDashboardDetails(this.activityFeedOffset, this.activityFeedLimit);
         }
@@ -231,97 +182,75 @@ axios.defaults.baseURL = 'http://streamlabs.code';
         if (!date) return;
         return new Date(date).toLocaleDateString("en-US");
       },
-      // async login () {
-      //   const newWindow = openWindow('', 'login')
-
-      //   const url = await this.fetchOauthUrl('github')
-      //   // console.log('url', url);
-      //   newWindow.location.href = url
-      // },
-
-      // async fetchOauthUrl (provider) {
-      //   console.log('fetchOauthUrl');
-      //   const { data } = await axios.post(`http://streamlabs.code/api/dashboard_details/1`)
-      //   // return 'a'
-      //   return data.url
-      // },
 
       async getTotalSales () {
-        const totalSales = await axios.get(`/api/total_sales/1`);
-        this.totalSales = totalSales.data;
+        await axios.post('/api/total_sales', this.postData)
+          .then(response => {
+            if(response.data.message) {
+               this.totalSales = 0;
+            } 
+            else {
+              this.totalSales = response.data;
+            }
+          })
+          .catch ((err) => {
+            console.log(err);
+         })
       },
 
       async getFollowerCount () {
-        const followers = await axios.get(`/api/follower_count/1`);
-        this.followerCount = followers.data;
+        await axios.post('/api/follower_count', this.postData)
+          .then(response => {
+            if(response.data.message) {
+               this.followerCount = 0;
+            } 
+            else {
+              this.followerCount = response.data;
+            }
+          })
+          .catch ((err) => {
+            console.log(err);
+         })
       },
 
-      async getTopSales () {
-        const top_sales = await axios.get(`/api/top_sales/1`);
-        this.topSales = top_sales.data;
+      async getTopSales() {
+         await axios.post('/api/top_sales', this.postData)
+          .then(response => {
+            if(response.data.message) {
+               this.topSales = null;
+            } 
+            else {
+              this.topSales = response.data;
+            }
+          })
+          .catch ((err) => {
+            console.log(err);
+         })
       },
 
       async getDashboardDetails (offset, limit) {
-        console.log('offset', offset, 'limit', limit);
-        const { data } = await axios.get(`/api/recent_activity/1/${offset}/${limit}`)
-        // const { data } = await axios.get(`/api/recent_activity/1/${offset}/${limit}`)
-        let activity = _.reverse(_.sortBy(data, ['created_at']));
-console.log('activity', activity);
-        if(Object.keys(this.userDetails).length) {
-          this.userDetails = this.userDetails.concat(activity);
-        } else {
-          this.userDetails = activity;
-        }
-        console.log(this.userDetails);
-      },
-      /**
-       * @param {MessageEvent} e
-       */
-      onMessage (e) {
-        if (e.origin !== window.origin || !e.data.token) {
-          return
-        }
+        this.postData.offset = offset;
+        this.postData.limit = limit;
 
-        this.$store.dispatch('auth/saveToken', {
-          token: e.data.token
+        await axios.post('/api/recent_activity', this.postData)
+          .then(response => {
+            if(response.data.message) {
+               this.topSales = null;
+            } 
+            else {
+              let activity = _.reverse(_.sortBy(response.data, ['created_at']));
+
+              if(Object.keys(this.userDetails).length) {
+                this.userDetails = this.userDetails.concat(activity);
+              } else {
+                this.userDetails = activity;
+              }
+            }
+          })
+          .catch ((err) => {
+            console.log(err);
         })
-
-        this.$router.push({ name: 'home' })
-      }
+      },
     }
-  }
-
-  /**
-   * @param  {Object} options
-   * @return {Window}
-   */
-  function openWindow (url, title, options = {}) {
-    if (typeof url === 'object') {
-      options = url
-      url = ''
-    }
-
-    options = { url, title, width: 600, height: 720, ...options }
-
-    const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screen.left
-    const dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screen.top
-    const width = window.innerWidth || document.documentElement.clientWidth || window.screen.width
-    const height = window.innerHeight || document.documentElement.clientHeight || window.screen.height
-
-    options.left = ((width / 2) - (options.width / 2)) + dualScreenLeft
-    options.top = ((height / 2) - (options.height / 2)) + dualScreenTop
-
-    const optionsStr = Object.keys(options).reduce((acc, key) => {
-      acc.push(`${key}=${options[key]}`)
-      return acc
-    }, []).join(',')
-
-    const newWindow = window.open(url, title, optionsStr)
-
-    if (window.focus) {
-      newWindow.focus()
-    }
-
-    return newWindow
   }
 </script>

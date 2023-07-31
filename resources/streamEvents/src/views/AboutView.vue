@@ -34,24 +34,10 @@ export default {
       //     type: String
       // }
     },
-    mounted() {
-      console.log('about page');
-        // axios.get('/api/user').then(response => {
-        //   console.log('user',response);
-        // });
-    },
     data() {
         return {
             dashboardTitle: 'Stream Events'
         }
-    },
-    created() {
-      console.log('about');
-    },
-    methods: {
-      // monitorPageUpdates(pageData) {
-        // this.lastPage = pageData.current >= pageData.total ? true : false;
-      // },
     },
 }
 </script>

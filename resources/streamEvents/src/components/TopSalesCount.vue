@@ -1,9 +1,9 @@
 <template>
   <div class="sales">
     <span class="sales__title">Top Item Sales</span>
-    <div class="sales__items" v-for="(item, key) in sales" :key='key'>
-      {{ item.item_name }}: {{ item.quantity }}
-    </div>
+      <div class="sales__items" v-for="(item, key) in sales" :key='key'>
+        {{ item.item_name }}: {{ item.quantity }}
+      </div>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -48,15 +48,5 @@ export default {
         required: true,
     }
   },
-  data() {
-    return {
-      item: {
-        item_name: 'No item sold yet'
-      }
-    }
-  },
-  mounted() {
-    console.log('sales',this.sales);
-  }
 }
 </script>

@@ -20,14 +20,13 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('/top_sales', [DashboardController::class, 'getTopSales']);
+Route::post('/follower_count', [DashboardController::class, 'getFollowerCount']);
+Route::post('/total_sales', [DashboardController::class, 'getTotalSales']);
 
-Route::get('/top_sales/{id}', [DashboardController::class, 'getTopSales']);
+Route::post('/recent_activity', [DashboardController::class, 'getRecentActivity']);
 
-Route::get('/recent_activity/{id}/{offset}/{limit}', [DashboardController::class, 'getRecentActivity']);
 
-Route::get('/follower_count/{id}', [DashboardController::class, 'getFollowerCount']);
-
-Route::get('/total_sales/{id}', [DashboardController::class, 'getTotalSales']);
 
 
 Route::get('/sign-in/{sso_type}', [LoginController::class, 'sso']);

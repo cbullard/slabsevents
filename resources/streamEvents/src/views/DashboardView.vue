@@ -54,11 +54,6 @@ export default {
       //     type: String
       // }
     },
-    mounted() {
-        axios.get('/api/user').then(response => {
-          console.log('user',response);
-        });
-    },
     data() {
         return {
             dashboardTitle: 'Stream Events'

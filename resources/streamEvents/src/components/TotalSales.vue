@@ -59,8 +59,5 @@ export default {
       }
     }
   },
-  mounted() {
-    console.log('sales',this.totalSales);
-  }
 }
 </script>

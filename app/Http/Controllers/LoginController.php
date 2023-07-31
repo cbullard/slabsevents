@@ -148,7 +148,7 @@ class LoginController extends Controller
             
             return $newUser;
         });
-
+        dd($user);
         $this->guard()->setToken(
             $this->userToken = $this->guard()->login($user)
         );
