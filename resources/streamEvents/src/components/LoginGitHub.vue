@@ -1,9 +1,7 @@
 <template>
   <div>
-    asdada
     <button class="btn btn-dark ml-auto" type="button" @click="login">
-      login with
-      <!-- <fa :icon="['fab', 'github']" /> -->
+      login with GitHub
     </button>
   </div>
 </template>
@@ -39,7 +37,7 @@ axios.defaults.withCredentials = true;
     },
 
     mounted () {
-      console.log('github mounted');
+      // console.log('github mounted');
     //   axios.get('/sanctum/csrf-cookie').then(response => {
     // // Login...
     //     console.log(response);

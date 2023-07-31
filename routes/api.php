@@ -1,13 +1,8 @@
 <?php
 
 use App\Http\Controllers\LoginController;
-use App\Models\Donation;
-use App\Models\MerchSale;
-use App\Models\Subscriber;
-use App\Models\User;
-use Carbon\Carbon;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,123 +19,22 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
-// Route::get('/sign-in/{sso_type}', [LoginController::class, 'sso']);
+
+
+Route::get('/top_sales/{id}', [DashboardController::class, 'getTopSales']);
+
+Route::get('/recent_activity/{id}/{offset}/{limit}', [DashboardController::class, 'getRecentActivity']);
+
+Route::get('/follower_count/{id}', [DashboardController::class, 'getFollowerCount']);
+
+Route::get('/total_sales/{id}', [DashboardController::class, 'getTotalSales']);
+
+
+Route::get('/sign-in/{sso_type}', [LoginController::class, 'sso']);
 Route::post('oauth/{sso_type}', [LoginController::class, 'redirectToProvider']);
 
 Route::post('oauth/{sso_type}', [LoginController::class, 'redirectToProvider']);
 
-Route::get('/follower_count/{id}', function($id) {
-    $followerCount = User::where('id', $id)
-                        ->withCount(['followers' => function ($query) {
-                            $query->whereDate('created_at', '>', Carbon::today()->subDays(30));
-                        }])
-                        ->get();
-    
-    return $followerCount[0]->followers_count;
-});
-
-Route::get('/top_sales/{id}', function($id) {
-    $top_sales = MerchSale::where('user_id', $id)
-    ->selectRaw('item_name, sum(quantity) as quantity')
-    ->groupBy('item_name')
-    ->orderBy('quantity', 'desc')
-    ->limit(3)
-    ->get();
-
-    return $top_sales->toJson();
-});
-
-Route::get('/dashboard_details/{id}', function($id) {
-    // $user = User::find(1)->followers;
-    // $user_id = Auth::user()->id;
-    // $details = User::where('id', $id)
-    //                     ->with('followers')
-    //                     ->with('subscribers')
-    //                     ->orderBy('created_at', 'asc')
-    //                     // ->paginate(2);
-    //                     // ->with('followers','subscribers','donations', 'sales')
-    //                     ->get();
-    $details = User::where('id', $id)
-                        ->with('followers', function($query){
-                            $query->orderBy('created_at', 'desc');
-                            // $query->limit(50);
-                        })
-                        ->with('subscribers', function($query){
-                            $query->orderBy('created_at', 'desc');
-                            // $query->limit(50);
-                        })
-                        ->with('donations', function($query){
-                            $query->orderBy('created_at', 'desc');
-                            // $query->limit(50);
-                        })
-                        ->with('sales', function($query){
-                            $query->orderBy('created_at', 'desc');
-                            // $query->limit(50);
-                        })
-                        ->withCount(['followers' => function ($query) {
-                            $query->whereDate('created_at', '>', Carbon::today()->subDays(30));
-                        }])
-                        ->get();
-    
-    // return $details[0]->donations->toJson();
-
-    $allItems = collect();
-    $allItems = $allItems->concat($details[0]->sales);
-    $allItems = $allItems->concat($details[0]->donations);
-    $allItems = $allItems->concat($details[0]->followers);
-    $allItems = $allItems->concat($details[0]->subscribers);
-    $allItems = $allItems->concat(collect(['cc' => $details[0]->followers_count]));
-
-    return $allItems->toJson();
-    // return $details[0]->followers->merge($details[0]->donations)->sortByDesc('created_at')->toJson();
-    // return $details[0]->followers->merge($details[0]->subscribers)->merge($details[0]->donations)->merge($details[0]->sales)->toJson();
-    // Artisan::call(UserDataSeeder::class, false, ['user_id' => 2]);
-    // $this->call(ClientSeeder::class, false, ['count' => 500]);
-
-    // Artisan::call('db:seed', [
-    //     '--class' => 'UserDataSeeder',['user_id' => 2]
-    // ]);
-});
-
-
-Route::get('/total_sales/{id}', function($id) {
-    $donation_total = Donation::where('user_id', $id)
-        ->selectRaw('sum(amount) as total_donations')
-        ->whereDate('created_at', '>', Carbon::today()->subDays(30))
-        ->value('total_donations');
-   
-    $merch_total = MerchSale::where('user_id', $id)
-        ->selectRaw('sum(amount) as total_merch')
-        ->whereDate('created_at', '>', Carbon::today()->subDays(30))
-        ->value('total_merch');
-    
-    $past30days = Carbon::today()->subDays(30);
-    $tierValues = Config::get('streamlabsConstants.tiers');
-
-    $subscriptions = Subscriber::where('user_id', $id)
-                                ->select('subscription_tier')
-                                ->selectRaw('sum(subscription_tier) as sub_total')
-                                ->whereDate('created_at', '>', $past30days)
-                                ->groupBy('subscription_tier')
-                                ->get();
-
-
-    $subscription_totals = 0;
-    foreach ($subscriptions as $tier) {
-        $total =  intVal($tier['sub_total']);
-        $tierNumber = $tier['subscription_tier'];
-        $subscription_totals += $total * $tierValues[$tierNumber]['price'];
-    }
-
-    $totals = [
-        'donations' =>number_format($donation_total, 2),
-        'merch_sales' =>number_format($merch_total, 2),
-        'subscriptions' => number_format($subscription_totals,2),
-        'total' => number_format(round($subscription_totals + $donation_total + $merch_total, 2), 2)
-    ];
-
-    return $totals;
-});
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();

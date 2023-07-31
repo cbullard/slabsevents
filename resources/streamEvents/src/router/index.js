@@ -11,8 +11,7 @@ const router = new VueRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView
+      redirect: { name: 'sign-in' }
     },
     {
       path: '/dashboard',
@@ -20,28 +19,9 @@ const router = new VueRouter({
       component: () => import('../views/UserDashboardView.vue')
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    },
-    {
       path: '/sign-in',
       name: 'sign-in',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/Login.vue')
-    },
-    {
-      path: '/error',
-      name: 'error',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/ErrorView.vue')
     }
   ]
 })

@@ -37,7 +37,6 @@
 
           <div class="form-group row">
             <div class="col-md-7 offset-md-3 d-flex">
-              <span>lkjaldja</span>
               <!-- Submit Button -->
               <button :loading="form.busy">
                 login
@@ -50,7 +49,7 @@
             </div>
           </div>
         </form>
-        {{ user }}
+        <!-- {{ user }} -->
       </div>
     </div>
   </div>
@@ -88,7 +87,7 @@ export default {
   }),
 
   created() {
-    console.log('login vue');
+
   },
   methods: {
     async login () {
